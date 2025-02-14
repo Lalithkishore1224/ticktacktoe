@@ -12,6 +12,9 @@ let gameMode = 'ai';
 let gameActive = true;
 let scores = { X: 0, O: 0, TIE: 0 };
 
+// 🎵 Audio for AI Win
+const winSound = new Audio('ee_saala_cup_lollipop.mp3'); // Ensure this file exists in your project folder
+
 function initializeBoard() {
     board.innerHTML = '';
     cells = [];
@@ -52,44 +55,11 @@ function handleClick(event) {
 }
 
 function aiMove() {
-    let availableCells = cells.filter(cell => !cell.textContent);
-    let randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
-    randomCell.click();
-}
-
-function checkWin(player) {
-    const winPatterns = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [0, 4, 8], [2, 4, 6]
-    ];
-    return winPatterns.some(pattern => 
-        pattern.every(index => cells[index].textContent === player)
-    );
-}
-
-function updateScore(winner) {
-    scores[winner]++;
-    scoreX.textContent = scores.X;
-    scoreO.textContent = scores.O;
-    scoreTie.textContent = scores.TIE;
-}
-
-function resetGame() {
-    setTimeout(initializeBoard, 1000);
-}
-
-aiModeButton.addEventListener('click', () => { gameMode = 'ai'; initializeBoard(); });
-multiplayerButton.addEventListener('click', () => { gameMode = 'multiplayer'; initializeBoard(); });
-resetButton.addEventListener('click', () => { scores = { X: 0, O: 0, TIE: 0 }; updateScore('X'); updateScore('O'); updateScore('TIE'); initializeBoard(); });
-
-initializeBoard();
-function aiMove() {
     let bestScore = -Infinity;
     let bestMove;
     const boardState = cells.map(cell => cell.textContent || null);
     
-   
+    // Check for immediate win
     for (let i = 0; i < 9; i++) {
         if (!boardState[i]) {
             boardState[i] = 'O';
@@ -101,7 +71,7 @@ function aiMove() {
         }
     }
 
-   
+    // Use Minimax to find the best move
     for (let i = 0; i < 9; i++) {
         if (!boardState[i]) {
             boardState[i] = 'O';
@@ -117,8 +87,37 @@ function aiMove() {
     cells[bestMove].click();
 }
 
+function checkWin(player) {
+    const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ];
+    
+    const isWinner = winPatterns.some(pattern =>
+        pattern.every(index => cells[index].textContent === player)
+    );
+
+    // 🎵 Play win sound if AI wins
+    if (isWinner && player === 'O') {
+        winSound.play();
+    }
+
+    return isWinner;
+}
+
+function updateScore(winner) {
+    scores[winner]++;
+    scoreX.textContent = scores.X;
+    scoreO.textContent = scores.O;
+    scoreTie.textContent = scores.TIE;
+}
+
+function resetGame() {
+    setTimeout(initializeBoard, 1000);
+}
+
 function minimax(board, depth, isMaximizing, alpha, beta) {
-   
     if (checkTerminal('O', board)) return 10 - depth;
     if (checkTerminal('X', board)) return depth - 10;
     if (board.every(cell => cell)) return 0;
@@ -158,14 +157,19 @@ function checkTerminal(player, board) {
         [0, 3, 6], [1, 4, 7], [2, 5, 8],
         [0, 4, 8], [2, 4, 6]
     ];
-    return winPatterns.some(pattern => 
+    return winPatterns.some(pattern =>
         pattern.every(index => board[index] === player)
     );
 }
+
+aiModeButton.addEventListener('click', () => { gameMode = 'ai'; initializeBoard(); });
+multiplayerButton.addEventListener('click', () => { gameMode = 'multiplayer'; initializeBoard(); });
 resetButton.addEventListener('click', () => {
-scores = { X: 0, O: 0, TIE: 0 };
-scoreX.textContent = scores.X;
-scoreO.textContent = scores.O;
-scoreTie.textContent = scores.TIE;
-initializeBoard();
+    scores = { X: 0, O: 0, TIE: 0 };
+    scoreX.textContent = scores.X;
+    scoreO.textContent = scores.O;
+    scoreTie.textContent = scores.TIE;
+    initializeBoard();
 });
+
+initializeBoard();
