@@ -13,7 +13,10 @@ let gameActive = true;
 let scores = { X: 0, O: 0, TIE: 0 };
 
 // 🎵 Audio for AI Win
-const winSound = new Audio('ee_saala_cup_lollipop.mp3'); // Ensure this file exists in your project folder
+const winSound = new Audio('ee_saala_cup_lollipop.mp3'); 
+
+// 🎵 Audio for Match Draw
+const drawSound = new Audio('irrungbhai.mp3'); 
 
 function initializeBoard() {
     board.innerHTML = '';
@@ -44,6 +47,7 @@ function handleClick(event) {
         return;
     } else if (cells.every(cell => cell.textContent)) {
         updateScore('TIE');
+        drawSound.play(); 
         resetGame();
         return;
     }
@@ -59,7 +63,7 @@ function aiMove() {
     let bestMove;
     const boardState = cells.map(cell => cell.textContent || null);
     
-    // Check for immediate win
+    
     for (let i = 0; i < 9; i++) {
         if (!boardState[i]) {
             boardState[i] = 'O';
@@ -71,7 +75,7 @@ function aiMove() {
         }
     }
 
-    // Use Minimax to find the best move
+    
     for (let i = 0; i < 9; i++) {
         if (!boardState[i]) {
             boardState[i] = 'O';
@@ -98,7 +102,7 @@ function checkWin(player) {
         pattern.every(index => cells[index].textContent === player)
     );
 
-    // 🎵 Play win sound if AI wins
+   
     if (isWinner && player === 'O') {
         winSound.play();
     }
