@@ -17,7 +17,7 @@ const winSound = new Audio('ee_saala_cup_lollipop.mp3');
 
 // 🎵 Audio for Match Draw
 const drawSound = new Audio('irrungbhai.mp3'); 
-
+const Xwin= new Audio('ADANG.mp3');
 function initializeBoard() {
     board.innerHTML = '';
     cells = [];
@@ -105,6 +105,10 @@ function checkWin(player) {
    
     if (isWinner && player === 'O') {
         winSound.play();
+
+    }
+    if(isWinner && player === 'X'){
+        Xwin.play();
     }
 
     return isWinner;
